@@ -83,7 +83,7 @@ async function main() {
   // Add/update humancheck config
   config.mcpServers.humancheck = {
     command: "npx",
-    args: ["humancheck-mcp"],
+    args: ["-y", "@humancheck/mcp-server"],
     env: {
       HUMANCHECK_API_URL: apiUrl,
       HUMANCHECK_API_KEY: apiKey,
