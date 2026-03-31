@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * HumanCheckMe MCP Server
  *
@@ -132,3 +130,4 @@ main().catch((error) => {
   );
   process.exit(1);
 });
+

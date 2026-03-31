@@ -1,6 +1,6 @@
 {
   "name": "@humancheck/mcp-server",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "MCP Server for HumanCheck — integrate human validation into AI workflows",
   "license": "MIT",
   "author": "HumanCheck <hello@humancheckme.com>",
@@ -15,8 +15,7 @@
   "main": "./dist/server.js",
   "types": "./dist/server.d.ts",
   "bin": {
-    "humancheck-mcp": "./dist/server.js",
-    "humancheck-mcp-init": "./dist/init.js"
+    "humancheck-mcp": "./dist/cli.js"
   },
   "exports": {
     ".": {
