@@ -1,0 +1,47 @@
+{
+  "name": "@humancheck/mcp-server",
+  "version": "0.1.0",
+  "description": "MCP Server for HumanCheck — integrate human validation into AI workflows",
+  "license": "MIT",
+  "author": "HumanCheck <hello@humancheckme.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellospacetech/humancheck-oss.git",
+    "directory": "packages/mcp-server"
+  },
+  "homepage": "https://humancheckme.com",
+  "keywords": ["humancheck", "mcp", "model-context-protocol", "ai-validation", "claude"],
+  "type": "module",
+  "main": "./dist/server.js",
+  "types": "./dist/server.d.ts",
+  "bin": {
+    "humancheck-mcp": "./dist/server.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@humancheck/shared": "*",
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

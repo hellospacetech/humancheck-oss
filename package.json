@@ -1,0 +1,31 @@
+{
+  "name": "humancheck-oss",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Open-source SDKs and integrations for HumanCheck — human-in-the-loop validation platform",
+  "license": "MIT",
+  "author": "HumanCheck <hello@humancheckme.com>",
+  "homepage": "https://humancheckme.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellospacetech/humancheck-oss.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hellospacetech/humancheck-oss/issues"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @humancheck/shared && npm run build --workspaces --if-present",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "npm run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.30.0",
+    "typescript": "^5.7.0"
+  }
+}

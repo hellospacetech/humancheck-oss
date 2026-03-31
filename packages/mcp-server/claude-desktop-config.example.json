@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "humancheckme": {
+      "command": "npx",
+      "args": ["tsx", "packages/mcp-server/src/server.ts"],
+      "env": {
+        "HUMANCHECK_API_URL": "http://localhost:3010",
+        "HUMANCHECK_API_KEY": "your-api-key"
+      }
+    }
+  }
+}

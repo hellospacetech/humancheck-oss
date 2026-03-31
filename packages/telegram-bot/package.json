@@ -1,0 +1,47 @@
+{
+  "name": "@humancheck/telegram-bot",
+  "version": "0.1.0",
+  "description": "Telegram bot for HumanCheck — collect human feedback via Telegram",
+  "license": "MIT",
+  "author": "HumanCheck <hello@humancheckme.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellospacetech/humancheck-oss.git",
+    "directory": "packages/telegram-bot"
+  },
+  "homepage": "https://humancheckme.com",
+  "keywords": ["humancheck", "telegram", "bot", "ai-validation", "feedback"],
+  "type": "module",
+  "main": "./dist/bot.js",
+  "types": "./dist/bot.d.ts",
+  "bin": {
+    "humancheck-bot": "./dist/bot.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/bot.d.ts",
+      "import": "./dist/bot.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "dev": "tsx watch src/bot.ts",
+    "build": "tsc",
+    "start": "node dist/bot.js",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@humancheck/shared": "*",
+    "grammy": "^1.35.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

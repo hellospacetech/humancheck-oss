@@ -1,0 +1,36 @@
+{
+  "name": "@humancheck/shared",
+  "version": "0.1.0",
+  "description": "Shared types, interfaces, and constants for HumanCheck platform",
+  "license": "MIT",
+  "author": "HumanCheck <hello@humancheckme.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hellospacetech/humancheck-oss.git",
+    "directory": "packages/shared"
+  },
+  "homepage": "https://humancheckme.com",
+  "keywords": ["humancheck", "human-in-the-loop", "ai-validation", "testing", "types"],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
