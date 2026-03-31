@@ -2,11 +2,16 @@
 
 [Model Context Protocol](https://modelcontextprotocol.io) server for [HumanCheck](https://humancheckme.com) — trigger human validation tests directly from Claude Desktop or Claude Code.
 
-## Install
+## Quick Setup (Claude Code)
 
 ```bash
-npm install @humancheck/mcp-server
+claude mcp add humancheck -s user \
+  -e HUMANCHECK_API_KEY=your-api-key \
+  -e HUMANCHECK_API_URL=https://api.humancheckme.com \
+  -- npx -y @humancheck/mcp-server@latest
 ```
+
+Get your API key at [app.humancheckme.com/settings](https://app.humancheckme.com/settings).
 
 ## Claude Desktop Configuration
 
@@ -15,9 +20,9 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "humancheckme": {
+    "humancheck": {
       "command": "npx",
-      "args": ["humancheck-mcp"],
+      "args": ["-y", "@humancheck/mcp-server@latest"],
       "env": {
         "HUMANCHECK_API_URL": "https://api.humancheckme.com",
         "HUMANCHECK_API_KEY": "your-api-key"
@@ -27,22 +32,15 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
-## Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `HUMANCHECK_API_URL` | Yes | HumanCheck API base URL |
-| `HUMANCHECK_API_KEY` | Yes | Your API key |
-
 ## MCP Tools
 
 | Tool | Description |
 |------|-------------|
-| `create-test` | Create a new human validation test |
-| `get-results` | Get test results and feedback |
-| `list-tasks` | List all tasks with status |
-| `quick-test` | Quick single-scenario test |
-| `retest` | Re-run a previous test |
+| `humancheck_create_test` | Create a new human validation test |
+| `humancheck_get_results` | Get test results and feedback |
+| `humancheck_list_tasks` | List all tasks with status |
+| `humancheck_quick_test` | Quick single-scenario test |
+| `humancheck_retest` | Re-run a previous test |
 
 ## Usage with Claude
 
