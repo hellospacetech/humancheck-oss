@@ -25,25 +25,13 @@ These open-source packages let you integrate with the HumanCheck platform:
 ### MCP Server (Claude Integration)
 
 ```bash
-npm install @humancheck/mcp-server
+claude mcp add humancheck -s user \
+  -e HUMANCHECK_API_KEY=your-api-key \
+  -e HUMANCHECK_API_URL=https://api.humancheckme.com \
+  -- npx -y @humancheck/mcp-server@latest
 ```
 
-Add to your Claude Desktop config:
-
-```json
-{
-  "mcpServers": {
-    "humancheckme": {
-      "command": "npx",
-      "args": ["humancheck-mcp"],
-      "env": {
-        "HUMANCHECK_API_URL": "https://api.humancheckme.com",
-        "HUMANCHECK_API_KEY": "your-api-key"
-      }
-    }
-  }
-}
-```
+Get your API key at [app.humancheckme.com/settings](https://app.humancheckme.com/settings).
 
 ### Telegram Bot
 
