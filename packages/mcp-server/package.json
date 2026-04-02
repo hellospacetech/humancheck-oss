@@ -1,6 +1,6 @@
 {
   "name": "@humancheck/mcp-server",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "MCP Server for HumanCheck — integrate human validation into AI workflows",
   "license": "MIT",
   "author": "HumanCheck <hello@humancheckme.com>",
@@ -10,7 +10,13 @@
     "directory": "packages/mcp-server"
   },
   "homepage": "https://humancheckme.com",
-  "keywords": ["humancheck", "mcp", "model-context-protocol", "ai-validation", "claude"],
+  "keywords": [
+    "humancheck",
+    "mcp",
+    "model-context-protocol",
+    "ai-validation",
+    "claude"
+  ],
   "type": "module",
   "main": "./dist/server.js",
   "types": "./dist/server.d.ts",
