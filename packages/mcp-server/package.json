@@ -1,7 +1,7 @@
 {
   "name": "@humancheck/mcp-server",
-  "version": "0.3.0",
-  "description": "MCP Server for HumanCheck — integrate human validation into AI workflows",
+  "version": "0.8.0",
+  "description": "MCP Server for HumanCheck \u2014 integrate human validation into AI workflows",
   "license": "MIT",
   "author": "HumanCheck <hello@humancheckme.com>",
   "repository": {
