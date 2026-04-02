@@ -26,6 +26,7 @@ interface CreateScenarioInput {
   title: string;
   steps: ScenarioStepInput[];
   expectedOutcome: string;
+  screenshotUrl?: string;
 }
 
 interface CreateTaskInput {
@@ -34,6 +35,13 @@ interface CreateTaskInput {
   difficulty: "EASY" | "MEDIUM" | "HARD";
   deadline?: string;
   price?: number;
+  scenarioIds?: string[];
+  scenarios?: Array<{
+    title: string;
+    steps: ScenarioStepInput[];
+    expectedOutcome?: string;
+    screenshotUrl?: string;
+  }>;
 }
 
 export interface ProjectResponse {
@@ -41,6 +49,7 @@ export interface ProjectResponse {
   name: string;
   appUrl: string;
   description: string | null;
+  status: string;
   createdAt: string;
 }
 
@@ -145,6 +154,36 @@ export interface RetestResponse {
   scenarioCount: number;
 }
 
+export interface TaskTesterInfo {
+  id: string;
+  name: string;
+  bio: string | null;
+  technologies: string[];
+  avatarUrl: string | null;
+  memberSince: string;
+  assignmentStatus: string;
+  testerScore: number | null;
+  testerLevel: string | null;
+  rounds: number[];
+  taskStats: {
+    feedbackCount: number;
+    passed: number;
+    failed: number;
+    passRate: number;
+    detailScore: number;
+  };
+  globalStats: {
+    totalTests: number;
+    completedTests: number;
+  };
+}
+
+export interface TaskTestersResponse {
+  taskId: string;
+  total: number;
+  testers: TaskTesterInfo[];
+}
+
 class ApiError extends Error {
   constructor(
     public statusCode: number,
@@ -219,8 +258,17 @@ export class HumanCheckApiClient {
     return this.request<ProjectResponse>("PUT", `/api/v1/projects/${id}`, data);
   }
 
-  async listProjects(): Promise<ProjectResponse[]> {
-    return this.request<ProjectResponse[]>("GET", "/api/v1/projects");
+  async listProjects(includeArchived?: boolean): Promise<ProjectResponse[]> {
+    const query = includeArchived ? "?includeArchived=true" : "";
+    return this.request<ProjectResponse[]>("GET", `/api/v1/projects${query}`);
+  }
+
+  async archiveProject(id: string): Promise<ProjectResponse> {
+    return this.request<ProjectResponse>("PUT", `/api/v1/projects/${id}/archive`);
+  }
+
+  async unarchiveProject(id: string): Promise<ProjectResponse> {
+    return this.request<ProjectResponse>("PUT", `/api/v1/projects/${id}/unarchive`);
   }
 
   async getProject(id: string): Promise<ProjectResponse> {
@@ -242,6 +290,21 @@ export class HumanCheckApiClient {
       results.push(scenario);
     }
     return results;
+  }
+
+  async addScenariosBulk(
+    projectId: string,
+    scenarios: Array<{
+      title: string;
+      steps: ScenarioStepInput[];
+      expectedOutcome?: string;
+      screenshotUrl?: string;
+    }>
+  ): Promise<ScenarioResponse[]> {
+    return this.request<ScenarioResponse[]>("POST", "/api/v1/scenarios/bulk", {
+      projectId,
+      scenarios,
+    });
   }
 
   async listScenarios(projectId: string): Promise<ScenarioResponse[]> {
@@ -267,6 +330,10 @@ export class HumanCheckApiClient {
 
   async getTaskRounds(taskId: string): Promise<RoundStats[]> {
     return this.request<RoundStats[]>("GET", `/api/v1/tasks/${taskId}/rounds`);
+  }
+
+  async getTaskTesters(taskId: string): Promise<TaskTestersResponse> {
+    return this.request<TaskTestersResponse>("GET", `/api/v1/tasks/${taskId}/testers`);
   }
 
   async retest(taskId: string, data: RetestInput): Promise<RetestResponse> {

@@ -2,16 +2,17 @@
  * humancheck_quick_test tool
  *
  * Quick test: provide an app URL and description, and this tool
- * generates simple generic test scenarios, creates the project,
+ * generates test scenarios, creates (or reuses) the project,
  * scenarios, and task in one go.
  *
- * For MVP, scenarios are generated from the description using
- * simple heuristics (no AI generation).
+ * - If projectId is given: adds scenarios to that project
+ * - If appUrl matches an existing active project: reuses it (dedup)
+ * - Otherwise: creates a new project
  */
 
 import { z } from "zod";
 import { HumanCheckApiClient } from "../api-client.js";
-import { handleCreateTest } from "./create-test.js";
+import { generateScenariosWithAI } from "../ai-scenario-generator.js";
 
 export const quickTestInputSchema = {
   appUrl: z.string().url().describe("The URL of the application to test"),
@@ -21,6 +22,10 @@ export const quickTestInputSchema = {
     .describe(
       "Description of what to test (e.g. 'sign up flow, login page, dashboard navigation')"
     ),
+  projectId: z
+    .string()
+    .optional()
+    .describe("Optional: reuse an existing project instead of creating a new one"),
   testerCount: z
     .number()
     .int()
@@ -29,12 +34,24 @@ export const quickTestInputSchema = {
     .optional()
     .default(3)
     .describe("Number of testers (1-20, default 3)"),
+  difficulty: z
+    .enum(["EASY", "MEDIUM", "HARD"])
+    .optional()
+    .default("MEDIUM")
+    .describe("Test difficulty (default MEDIUM)"),
+  deadline: z
+    .string()
+    .optional()
+    .describe("Optional deadline in ISO 8601 format"),
 } as const;
 
 export type QuickTestInput = {
   appUrl: string;
   description: string;
+  projectId?: string;
   testerCount?: number;
+  difficulty?: "EASY" | "MEDIUM" | "HARD";
+  deadline?: string;
 };
 
 /**
@@ -74,7 +91,6 @@ function generateScenariosFromDescription(
     ],
   });
 
-  // Parse description for common test patterns
   const lowerDesc = description.toLowerCase();
 
   if (
@@ -273,31 +289,97 @@ export async function handleQuickTest(
   client: HumanCheckApiClient
 ): Promise<{ content: Array<{ type: "text"; text: string }> }> {
   try {
-    const scenarios = generateScenariosFromDescription(
+    // Try AI-powered generation, fall back to keyword matching
+    const aiScenarios = await generateScenariosWithAI(args.appUrl, args.description);
+    const scenarios = aiScenarios ?? generateScenariosFromDescription(
       args.appUrl,
       args.description
     );
 
-    // Extract a project name from the URL
-    let projectName: string;
-    try {
-      const url = new URL(args.appUrl);
-      projectName = `Quick Test — ${url.hostname}`;
-    } catch {
-      projectName = `Quick Test — ${args.appUrl}`;
+    let projectId = args.projectId;
+    let projectName = "";
+    let reusedProject = false;
+
+    if (projectId) {
+      // Explicit projectId — reuse directly
+      const project = await client.getProject(projectId);
+      projectName = project.name;
+      reusedProject = true;
+    } else {
+      // Check if an active project with this appUrl already exists (dedup)
+      const existingProjects = await client.listProjects(false);
+      const match = existingProjects.find(
+        (p) => p.appUrl === args.appUrl && p.status === "ACTIVE"
+      );
+
+      if (match) {
+        projectId = match.id;
+        projectName = match.name;
+        reusedProject = true;
+      } else {
+        // Create new project
+        try {
+          const url = new URL(args.appUrl);
+          projectName = `Quick Test — ${url.hostname}`;
+        } catch {
+          projectName = `Quick Test — ${args.appUrl}`;
+        }
+
+        const project = await client.createProject({
+          name: projectName,
+          appUrl: args.appUrl,
+          description: `Quick test: ${args.description}`,
+        });
+        projectId = project.id;
+      }
     }
 
-    // Delegate to the create-test handler
-    return handleCreateTest(
-      {
-        appUrl: args.appUrl,
-        projectName,
-        scenarios,
-        testerCount: args.testerCount ?? 3,
-        difficulty: "MEDIUM",
-      },
-      client
+    // Add scenarios (bulk)
+    const scenarioResults = await client.addScenariosBulk(
+      projectId!,
+      scenarios.map((s) => ({
+        title: s.title,
+        steps: s.steps.map((step, idx) => ({
+          order: idx + 1,
+          instruction: step.instruction,
+          expectedResult: step.expectedResult,
+        })),
+        expectedOutcome: `All steps in "${s.title}" pass successfully`,
+      }))
     );
+
+    // Create task
+    const task = await client.createTask({
+      projectId: projectId!,
+      testerCount: args.testerCount ?? 3,
+      difficulty: args.difficulty ?? "MEDIUM",
+      scenarioIds: scenarioResults.map((s) => s.id),
+      ...(args.deadline ? { deadline: args.deadline } : {}),
+    });
+
+    const result = {
+      taskId: task.id,
+      projectId,
+      status: task.status,
+      projectName,
+      reusedProject,
+      appUrl: args.appUrl,
+      scenarioCount: scenarioResults.length,
+      testerCount: task.testerCount,
+      difficulty: task.difficulty,
+      message: reusedProject
+        ? `Test added to existing project "${projectName}". ${scenarioResults.length} scenario(s) will be tested by ${task.testerCount} tester(s).`
+        : `New project "${projectName}" created. ${scenarioResults.length} scenario(s) will be tested by ${task.testerCount} tester(s). Task is now ${task.status}.`,
+    };
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: JSON.stringify(result, null, 2),
+        },
+      ],
+    };
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Unknown error occurred";

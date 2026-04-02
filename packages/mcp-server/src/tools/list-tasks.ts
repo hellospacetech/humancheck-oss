@@ -13,10 +13,12 @@ export const listTasksInputSchema = {
     .enum(["DRAFT", "ACTIVE", "IN_PROGRESS", "COMPLETED"])
     .optional()
     .describe("Filter by task status"),
+  projectId: z.string().optional().describe("Filter tasks by project ID"),
 } as const;
 
 export type ListTasksInput = {
   status?: "DRAFT" | "ACTIVE" | "IN_PROGRESS" | "COMPLETED";
+  projectId?: string;
 };
 
 export async function handleListTasks(
@@ -31,9 +33,14 @@ export async function handleListTasks(
       ? tasks.filter((t) => t.status === args.status)
       : tasks;
 
+    // Filter by projectId if provided
+    const filteredByProject = args.projectId
+      ? filtered.filter((t) => t.projectId === args.projectId)
+      : filtered;
+
     // Enrich each task with round info where possible
     const enriched = await Promise.all(
-      filtered.map(async (task) => {
+      filteredByProject.map(async (task) => {
         let rounds: Array<{
           roundNumber: number;
           status: string;
