@@ -1,29 +1,52 @@
 # @humancheck/mcp-server
 
-## 0.3.0
+## 0.8.0
 
 ### Minor Changes
 
-- a8d6296: Major MCP server update with 8 new tools and DX improvements
+- 473575a: MCP audit fixes — 10 findings addressed, 14 → 20 tools:
 
-  New tools:
+  - fix: get_results returns null consensusScore when no testers responded
+  - feat: humancheck_get_project (full details + scenario list)
+  - feat: humancheck_update_project (name, appUrl, description, autoAcceptTesters)
+  - feat: humancheck_list_scenarios (with step details)
+  - feat: humancheck_update_scenario (title, steps, screenshotUrl)
+  - feat: humancheck_delete_scenario (permanent delete)
+  - feat: humancheck_cancel_task (stop task, release testers)
+  - feat: quick_test dryRun mode (preview before dispatch)
+  - feat: webhookUrl param on create_task + webhook dispatcher on completion
+  - feat: completedTesters/totalTesters in list_tasks response
+  - refactor: slim mutation responses (remove input echo, shorten hints)
+  - refactor: list_projects truncates descriptions to 60 chars
 
-  - humancheck_add_scenario: Add single test scenario to project
-  - humancheck_add_scenarios: Bulk-add multiple scenarios in one call
-  - humancheck_create_project: Create a new project
-  - humancheck_archive_project: Archive a project
-  - humancheck_unarchive_project: Restore archived project
-  - humancheck_list_projects: List all projects
-  - humancheck_get_testers: Get tester details for a task
-  - humancheck_help: Platform usage guide
+  Server changes:
 
-  Improvements:
+  - Add webhookUrl column to Task model (migration)
+  - Add webhook dispatcher (fire-and-forget POST on task.completed)
+  - Accept webhookUrl in task creation endpoint
 
-  - humancheck_create_task: Supports inline scenario creation
-  - humancheck_get_results: includeTesters flag merges tester data
-  - humancheck_quick_test: AI-powered scenario generation (Claude Haiku, keyword fallback)
-  - humancheck_quick_test: App URL dedup + optional projectId reuse
-  - Bulk scenario API for faster workflow
+## 0.7.0
+
+### Minor Changes
+
+- c254687: Initial release — HumanCheck human-in-the-loop validation platform
+
+  - Monorepo with shared types, API server, MCP server, and Telegram bot
+  - Express + Prisma backend with Better Auth
+  - Model Context Protocol integration for AI workflows
+  - Telegram bot for tester feedback collection
+
+- Embed scenario quality rules in tool descriptions
+
+  - humancheck_add_scenario now includes UI-aware scenario writing guidelines
+  - humancheck_quick_test description includes codebase verification reminder
+  - All MCP users automatically get scenario quality rules when Claude reads tool descriptions
+  - Rules: verify UI elements exist, match real behavior, follow navigation flow, 3-5 steps per scenario
+
+### Patch Changes
+
+- Updated dependencies [c254687]
+  - @humancheck/shared@0.7.0
 
 ## 0.1.0
 

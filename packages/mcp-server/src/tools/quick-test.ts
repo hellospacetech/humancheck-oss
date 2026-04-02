@@ -43,6 +43,11 @@ export const quickTestInputSchema = {
     .string()
     .optional()
     .describe("Optional deadline in ISO 8601 format"),
+  dryRun: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe("If true, generates scenarios and returns them for review WITHOUT dispatching testers. Use this to preview before committing."),
 } as const;
 
 export type QuickTestInput = {
@@ -52,6 +57,7 @@ export type QuickTestInput = {
   testerCount?: number;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
   deadline?: string;
+  dryRun?: boolean;
 };
 
 /**
@@ -296,6 +302,33 @@ export async function handleQuickTest(
       args.description
     );
 
+    // Dry run: return generated scenarios for review without dispatching
+    if (args.dryRun) {
+      const preview = {
+        dryRun: true,
+        appUrl: args.appUrl,
+        scenarioCount: scenarios.length,
+        scenarios: scenarios.map((s) => ({
+          title: s.title,
+          steps: s.steps.map((step, idx) => ({
+            order: idx + 1,
+            instruction: step.instruction,
+            expectedResult: step.expectedResult,
+          })),
+        })),
+        message: `Preview: ${scenarios.length} scenario(s) generated. Review and call again without dryRun to dispatch testers.`,
+      };
+
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify(preview, null, 2),
+          },
+        ],
+      };
+    }
+
     let projectId = args.projectId;
     let projectName = "";
     let reusedProject = false;
@@ -361,15 +394,8 @@ export async function handleQuickTest(
       taskId: task.id,
       projectId,
       status: task.status,
-      projectName,
-      reusedProject,
-      appUrl: args.appUrl,
       scenarioCount: scenarioResults.length,
-      testerCount: task.testerCount,
-      difficulty: task.difficulty,
-      message: reusedProject
-        ? `Test added to existing project "${projectName}". ${scenarioResults.length} scenario(s) will be tested by ${task.testerCount} tester(s).`
-        : `New project "${projectName}" created. ${scenarioResults.length} scenario(s) will be tested by ${task.testerCount} tester(s). Task is now ${task.status}.`,
+      message: `${scenarioResults.length} scenario(s) dispatched to ${task.testerCount} tester(s).`,
     };
 
     return {

@@ -8,6 +8,7 @@ export interface CreateProjectDTO {
   name: string;
   appUrl: string;
   description?: string;
+  isQualification?: boolean;
 }
 
 export interface CreateScenarioDTO {

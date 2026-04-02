@@ -34,9 +34,8 @@ export async function handleListProjects(
         projectId: p.id,
         name: p.name,
         appUrl: p.appUrl,
-        description: p.description,
+        description: p.description ? p.description.slice(0, 60) + (p.description.length > 60 ? "…" : "") : null,
         status: p.status,
-        createdAt: p.createdAt,
       })),
       message:
         projects.length === 0

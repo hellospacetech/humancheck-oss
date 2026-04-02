@@ -59,15 +59,9 @@ export async function handleAddScenarios(
     );
 
     const result = {
-      projectId: args.projectId,
       scenarioCount: created.length,
-      scenarios: created.map((s) => ({
-        id: s.id,
-        title: s.title,
-        stepCount: s.steps.length,
-      })),
-      message:
-        `${created.length} scenario(s) added. Use humancheck_create_task to dispatch testers.`,
+      scenarioIds: created.map((s) => s.id),
+      message: `${created.length} scenario(s) added.`,
     };
 
     return {

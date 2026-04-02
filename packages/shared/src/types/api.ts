@@ -22,6 +22,7 @@ export interface ApiProject {
   name: string;
   appUrl: string;
   description: string | null;
+  status?: "ACTIVE" | "ARCHIVED";
   autoAcceptTesters?: boolean;
   createdAt: string;
   scenarioCount?: number;

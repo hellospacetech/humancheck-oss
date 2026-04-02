@@ -50,15 +50,29 @@ export async function handleGetResults(
     // JSON format: get AI-structured results
     const results = await client.getResultsAI(args.taskId);
 
+    // Guard: no testers have responded yet
+    const noResults =
+      results.summary.testers === 0 && results.summary.totalScenarios === 0;
+
+    const summary = noResults
+      ? { ...results.summary, consensusScore: null as number | null }
+      : results.summary;
+
+    let message: string;
+    if (noResults) {
+      message = "No results yet — waiting for testers to complete the task.";
+    } else if (results.issues.length === 0) {
+      message = "All scenarios passed! No issues found.";
+    } else {
+      message = `Found ${results.issues.length} issue(s) across ${results.summary.failed} failed scenario(s). ${results.summary.passed} scenario(s) passed.`;
+    }
+
     const output: Record<string, unknown> = {
       taskId: results.taskId,
       appUrl: results.appUrl,
-      summary: results.summary,
+      summary,
       issues: results.issues,
-      message:
-        results.issues.length === 0
-          ? "All scenarios passed! No issues found."
-          : `Found ${results.issues.length} issue(s) across ${results.summary.failed} failed scenario(s). ${results.summary.passed} scenario(s) passed.`,
+      message,
     };
 
     if (args.includeTesters) {

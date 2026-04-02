@@ -25,9 +25,8 @@ export async function handleArchiveProject(
 
     const result = {
       projectId: project.id,
-      name: project.name,
       status: project.status,
-      message: `Project "${project.name}" has been archived. It will no longer appear in default project listings, but test history and tester data are preserved.`,
+      message: "Project archived.",
     };
 
     return {

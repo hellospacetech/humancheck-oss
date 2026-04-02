@@ -36,6 +36,7 @@ interface CreateTaskInput {
   deadline?: string;
   price?: number;
   scenarioIds?: string[];
+  webhookUrl?: string;
   scenarios?: Array<{
     title: string;
     steps: ScenarioStepInput[];
@@ -254,7 +255,7 @@ export class HumanCheckApiClient {
     return this.request<ProjectResponse>("POST", "/api/v1/projects", input);
   }
 
-  async updateProject(id: string, data: { autoAcceptTesters?: boolean }): Promise<ProjectResponse> {
+  async updateProject(id: string, data: { name?: string; appUrl?: string; description?: string; autoAcceptTesters?: boolean }): Promise<ProjectResponse> {
     return this.request<ProjectResponse>("PUT", `/api/v1/projects/${id}`, data);
   }
 
@@ -314,7 +315,22 @@ export class HumanCheckApiClient {
     );
   }
 
+  async updateScenario(
+    id: string,
+    data: { title?: string; steps?: ScenarioStepInput[]; expectedOutcome?: string; screenshotUrl?: string }
+  ): Promise<ScenarioResponse> {
+    return this.request<ScenarioResponse>("PUT", `/api/v1/scenarios/${id}`, data);
+  }
+
+  async deleteScenario(id: string): Promise<void> {
+    return this.request<void>("DELETE", `/api/v1/scenarios/${id}`);
+  }
+
   // --- Tasks ---
+
+  async cancelTask(id: string): Promise<TaskResponse> {
+    return this.request<TaskResponse>("POST", `/api/v1/tasks/${id}/cancel`);
+  }
 
   async createTask(input: CreateTaskInput): Promise<TaskResponse> {
     return this.request<TaskResponse>("POST", "/api/v1/tasks", input);
@@ -334,6 +350,15 @@ export class HumanCheckApiClient {
 
   async getTaskTesters(taskId: string): Promise<TaskTestersResponse> {
     return this.request<TaskTestersResponse>("GET", `/api/v1/tasks/${taskId}/testers`);
+  }
+
+  async getTaskProgress(taskId: string): Promise<{
+    taskId: string;
+    taskStatus: string;
+    totalScenarios: number;
+    testers: Array<{ name: string; status: string; completedScenarios: number; totalScenarios: number }>;
+  }> {
+    return this.request("GET", `/api/v1/tasks/${taskId}/progress`);
   }
 
   async retest(taskId: string, data: RetestInput): Promise<RetestResponse> {

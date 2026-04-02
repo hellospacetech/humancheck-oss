@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * HumanCheckMe MCP Server
  *
@@ -76,6 +78,36 @@ import {
   handleHelp,
   type HelpInput,
 } from "./tools/help.js";
+import {
+  getProjectInputSchema,
+  handleGetProject,
+  type GetProjectInput,
+} from "./tools/get-project.js";
+import {
+  updateProjectInputSchema,
+  handleUpdateProject,
+  type UpdateProjectInput,
+} from "./tools/update-project.js";
+import {
+  listScenariosInputSchema,
+  handleListScenarios,
+  type ListScenariosInput,
+} from "./tools/list-scenarios.js";
+import {
+  updateScenarioInputSchema,
+  handleUpdateScenario,
+  type UpdateScenarioInput,
+} from "./tools/update-scenario.js";
+import {
+  deleteScenarioInputSchema,
+  handleDeleteScenario,
+  type DeleteScenarioInput,
+} from "./tools/delete-scenario.js";
+import {
+  cancelTaskInputSchema,
+  handleCancelTask,
+  type CancelTaskInput,
+} from "./tools/cancel-task.js";
 
 // --- Initialize API client ---
 let apiClient: HumanCheckApiClient;
@@ -230,6 +262,60 @@ server.tool(
   retestInputSchema,
   async (args) => {
     return handleRetest(args as unknown as RetestInput, apiClient);
+  }
+);
+
+server.tool(
+  "humancheck_get_project",
+  "Get full details for a single project including its scenarios.",
+  getProjectInputSchema,
+  async (args) => {
+    return handleGetProject(args as unknown as GetProjectInput, apiClient);
+  }
+);
+
+server.tool(
+  "humancheck_update_project",
+  "Update a project's name, description, URL, or auto-accept preference.",
+  updateProjectInputSchema,
+  async (args) => {
+    return handleUpdateProject(args as unknown as UpdateProjectInput, apiClient);
+  }
+);
+
+server.tool(
+  "humancheck_list_scenarios",
+  "List all scenarios for a project with step details.",
+  listScenariosInputSchema,
+  async (args) => {
+    return handleListScenarios(args as unknown as ListScenariosInput, apiClient);
+  }
+);
+
+server.tool(
+  "humancheck_update_scenario",
+  "Update a scenario's title, steps, or screenshot URL. Steps are fully replaced if provided.",
+  updateScenarioInputSchema,
+  async (args) => {
+    return handleUpdateScenario(args as unknown as UpdateScenarioInput, apiClient);
+  }
+);
+
+server.tool(
+  "humancheck_delete_scenario",
+  "Permanently delete a scenario. Cannot be undone.",
+  deleteScenarioInputSchema,
+  async (args) => {
+    return handleDeleteScenario(args as unknown as DeleteScenarioInput, apiClient);
+  }
+);
+
+server.tool(
+  "humancheck_cancel_task",
+  "Cancel a task, stopping it and releasing assigned testers. Cannot cancel COMPLETED or already CANCELLED tasks.",
+  cancelTaskInputSchema,
+  async (args) => {
+    return handleCancelTask(args as unknown as CancelTaskInput, apiClient);
   }
 );
 

@@ -44,12 +44,8 @@ export async function handleCreateProject(
 
     const result = {
       projectId: project.id,
-      name: project.name,
-      appUrl: project.appUrl,
-      description: project.description,
-      autoAcceptTesters: args.autoAcceptTesters !== false,
-      message:
-        "Project created. Use humancheck_add_scenario to add test scenarios.",
+      status: "ACTIVE",
+      message: "Project created.",
     };
 
     return {

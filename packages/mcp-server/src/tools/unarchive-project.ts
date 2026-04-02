@@ -25,9 +25,8 @@ export async function handleUnarchiveProject(
 
     const result = {
       projectId: project.id,
-      name: project.name,
       status: project.status,
-      message: `Project "${project.name}" has been restored to active status. It will now appear in default project listings.`,
+      message: "Project restored.",
     };
 
     return {

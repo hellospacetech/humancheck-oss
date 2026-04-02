@@ -58,15 +58,28 @@ export async function handleListTasks(
           // Round info is optional — if the endpoint fails, skip it
         }
 
+        // Fetch tester progress for active/in-progress tasks
+        let completedTesters = 0;
+        let totalTesters = 0;
+        if (task.status === "ACTIVE" || task.status === "IN_PROGRESS" || task.status === "COMPLETED") {
+          try {
+            const progress = await client.getTaskProgress(task.id);
+            totalTesters = progress.testers.length;
+            completedTesters = progress.testers.filter(
+              (t) => t.status === "COMPLETED" || t.completedScenarios >= t.totalScenarios
+            ).length;
+          } catch {
+            // Progress info is optional
+          }
+        }
+
         return {
           taskId: task.id,
           projectName: task.project?.name ?? "Unknown",
-          appUrl: task.project?.appUrl ?? "Unknown",
           status: task.status,
           testerCount: task.testerCount,
-          difficulty: task.difficulty,
-          assignedTesters: task._count?.assignments ?? 0,
-          createdAt: task.createdAt,
+          completedTesters,
+          totalTesters,
           rounds,
         };
       })

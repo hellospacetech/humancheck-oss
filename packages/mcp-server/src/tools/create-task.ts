@@ -49,6 +49,11 @@ export const createTaskInputSchema = {
     )
     .optional()
     .describe("Inline scenarios to create and attach to this task. Alternative to scenarioIds — creates scenarios and task in one call."),
+  webhookUrl: z
+    .string()
+    .url()
+    .optional()
+    .describe("Optional URL to receive a POST request when the task completes."),
 } as const;
 
 export type CreateTaskInput = {
@@ -62,6 +67,7 @@ export type CreateTaskInput = {
     steps: Array<{ instruction: string; expectedResult: string }>;
     screenshotUrl?: string;
   }>;
+  webhookUrl?: string;
 };
 
 export async function handleCreateTask(
@@ -74,6 +80,7 @@ export async function handleCreateTask(
       testerCount: args.testerCount ?? 3,
       difficulty: args.difficulty ?? "MEDIUM",
       deadline: args.deadline,
+      webhookUrl: args.webhookUrl,
       scenarioIds: args.scenarioIds,
       ...(args.scenarios
         ? {
@@ -93,11 +100,8 @@ export async function handleCreateTask(
 
     const result = {
       taskId: task.id,
-      projectId: task.projectId,
       status: task.status,
-      testerCount: task.testerCount,
-      difficulty: task.difficulty,
-      message: `Task created. ${task.testerCount} tester(s) will be matched. Use humancheck_list_tasks to monitor progress.`,
+      message: `Task created. ${task.testerCount} tester(s) will be matched.`,
     };
 
     return {

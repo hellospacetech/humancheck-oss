@@ -4,6 +4,7 @@ export enum TaskStatus {
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
+  OVERDUE = "OVERDUE",
 }
 
 export enum TaskDifficulty {
@@ -25,6 +26,7 @@ export interface CreateTaskDTO {
   difficulty: TaskDifficulty;
   deadline?: string;
   price?: number;
+  scenariosPerTester?: number;
 }
 
 export interface TaskResponse {
