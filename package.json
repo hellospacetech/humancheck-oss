@@ -1,31 +1,35 @@
 {
-  "name": "humancheck-oss",
-  "version": "0.0.0",
+  "name": "humancheck",
+  "version": "0.1.0",
   "private": true,
-  "description": "Open-source SDKs and integrations for HumanCheck — human-in-the-loop validation platform",
+  "description": "humancheckme.com — Open-source human-in-the-loop validation platform for AI-generated products",
   "license": "MIT",
   "author": "HumanCheck <hello@humancheckme.com>",
   "homepage": "https://humancheckme.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hellospacetech/humancheck-oss.git"
+    "url": "https://github.com/hellospacetech/humancheck.git"
   },
   "bugs": {
-    "url": "https://github.com/hellospacetech/humancheck-oss/issues"
+    "url": "https://github.com/hellospacetech/humancheck/issues"
   },
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
+    "dev:server": "npm run dev -w @humancheck/server",
+    "dev:client": "npm run dev -w @humancheck/client",
+    "dev:tester": "npm run dev -w @humancheck/tester",
+    "dev:bot": "npm run dev -w @humancheck/telegram-bot",
+    "dev:mcp": "npm run dev -w @humancheck/mcp-server",
     "build": "npm run build -w @humancheck/shared && npm run build --workspaces --if-present",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "npm run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.6.0",
-    "@changesets/cli": "^2.30.0",
-    "typescript": "^5.7.0"
+    "@changesets/cli": "^2.30.0"
   }
 }

@@ -1,10 +1,10 @@
 {
   "mcpServers": {
-    "humancheck": {
+    "humancheckme": {
       "command": "npx",
-      "args": ["-y", "@humancheck/mcp-server@latest"],
+      "args": ["tsx", "packages/mcp-server/src/server.ts"],
       "env": {
-        "HUMANCHECK_API_URL": "https://api.humancheckme.com",
+        "HUMANCHECK_API_URL": "http://localhost:3010",
         "HUMANCHECK_API_KEY": "your-api-key"
       }
     }

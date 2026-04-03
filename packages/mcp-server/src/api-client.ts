@@ -31,12 +31,14 @@ interface CreateScenarioInput {
 
 interface CreateTaskInput {
   projectId: string;
+  title?: string;
   testerCount: number;
   difficulty: "EASY" | "MEDIUM" | "HARD";
   deadline?: string;
   price?: number;
   scenarioIds?: string[];
   webhookUrl?: string;
+  autoAcceptTesters?: boolean;
   scenarios?: Array<{
     title: string;
     steps: ScenarioStepInput[];
@@ -66,6 +68,7 @@ export interface ScenarioResponse {
 export interface TaskResponse {
   id: string;
   projectId: string;
+  title: string | null;
   status: string;
   testerCount: number;
   difficulty: string;
@@ -185,13 +188,20 @@ export interface TaskTestersResponse {
   testers: TaskTesterInfo[];
 }
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(
     public statusCode: number,
     message: string,
     public body?: unknown
   ) {
-    super(message);
+    // Enrich message with server error details
+    const bodyMsg =
+      body && typeof body === "object" && body !== null
+        ? (body as Record<string, unknown>).message ||
+          (body as Record<string, unknown>).error ||
+          ""
+        : "";
+    super(bodyMsg ? `${message}: ${bodyMsg}` : message);
     this.name = "ApiError";
   }
 }
@@ -274,6 +284,25 @@ export class HumanCheckApiClient {
 
   async getProject(id: string): Promise<ProjectResponse> {
     return this.request<ProjectResponse>("GET", `/api/v1/projects/${id}`);
+  }
+
+  // --- Scenario Generation ---
+
+  async generateScenarios(
+    appUrl: string,
+    description: string
+  ): Promise<Array<{ title: string; steps: Array<{ instruction: string; expectedResult: string }> }> | null> {
+    try {
+      const result = await this.request<{
+        scenarios: Array<{
+          title: string;
+          steps: Array<{ instruction: string; expectedResult: string }>;
+        }>;
+      }>("POST", "/api/v1/scenarios/generate", { appUrl, description });
+      return result.scenarios;
+    } catch {
+      return null; // fallback — server unavailable or AI not configured
+    }
   }
 
   // --- Scenarios ---

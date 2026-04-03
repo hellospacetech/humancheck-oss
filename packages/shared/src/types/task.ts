@@ -22,16 +22,19 @@ export enum AssignmentStatus {
 
 export interface CreateTaskDTO {
   projectId: string;
+  title?: string;
   testerCount: number;
   difficulty: TaskDifficulty;
   deadline?: string;
   price?: number;
   scenariosPerTester?: number;
+  autoAcceptTesters?: boolean;
 }
 
 export interface TaskResponse {
   id: string;
   projectId: string;
+  title: string | null;
   status: TaskStatus;
   testerCount: number;
   difficulty: TaskDifficulty;

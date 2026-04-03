@@ -1,5 +1,71 @@
 # @humancheck/mcp-server
 
+## 0.14.1
+
+### Patch Changes
+
+- Delegate scenario generation to AI client — it has code context for better scenarios. No server-side AI cost.
+
+## 0.14.0
+
+### Minor Changes
+
+- Server-side AI scenario generation. No user ANTHROPIC_API_KEY needed — server handles it.
+
+## 0.13.2
+
+### Patch Changes
+
+- Remove appUrl parameter from humancheck_test — always show project picker dropdown to prevent AI from guessing URLs.
+
+## 0.13.1
+
+### Patch Changes
+
+- Guided test UX: project picker dropdown, optional params from conversation context, rich scenario preview with step details.
+
+## 0.13.0
+
+### Minor Changes
+
+- Add guided workflow with MCP elicitation. humancheck_test is zero-param entry point — server asks user for every decision. Fallback humancheck_test_submit for non-elicitation clients.
+
+## 0.12.0
+
+### Minor Changes
+
+- [`abc3fd8`](https://github.com/hellospacetech/humancheck/commit/abc3fd8add6e1123e4581cf235182fb15a5a4b89) Thanks [@namelooksgreat](https://github.com/namelooksgreat)! - feat: remote MCP server via Streamable HTTP — connect with URL + API key, no npx needed
+
+- Add humancheck-workflow skill as 4th layer of AI workflow enforcement. Setup command now installs skill file. Instructions slimmed to concise safety net. Task = test topic model enforced via scenarioIds.
+
+## 0.9.0
+
+### Minor Changes
+
+- feat: MCP audit findings — new tools + response optimization + bug fixes
+
+  MCP Server:
+
+  - add list_scenarios, update_scenario, delete_scenario tools
+  - add get_project, update_project tools
+  - add cancel_task tool
+  - add dryRun mode to quick_test (review before dispatch)
+  - add completedTesters/totalTesters to task responses
+  - slim mutation responses (no echo), truncate list descriptions
+  - add webhook support for task completion
+
+  Server:
+
+  - fix get_results false positive (consensusScore=null when 0 testers)
+  - add scenario CRUD endpoints
+  - add task cancel endpoint
+  - add webhook callback on task completion
+
+### Patch Changes
+
+- Updated dependencies [438bd0a]
+  - @humancheck/shared@0.9.0
+
 ## 0.8.0
 
 ### Minor Changes

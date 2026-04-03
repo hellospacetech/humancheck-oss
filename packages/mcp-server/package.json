@@ -1,6 +1,6 @@
 {
   "name": "@humancheck/mcp-server",
-  "version": "0.8.0",
+  "version": "0.14.1",
   "description": "MCP Server for HumanCheck — integrate human validation into AI workflows",
   "license": "MIT",
   "author": "HumanCheck <hello@humancheckme.com>",
@@ -27,6 +27,18 @@
     ".": {
       "types": "./dist/server.d.ts",
       "import": "./dist/server.js"
+    },
+    "./register-tools": {
+      "types": "./dist/register-tools.d.ts",
+      "import": "./dist/register-tools.js"
+    },
+    "./api-client": {
+      "types": "./dist/api-client.d.ts",
+      "import": "./dist/api-client.js"
+    },
+    "./instructions": {
+      "types": "./dist/instructions.d.ts",
+      "import": "./dist/instructions.js"
     }
   },
   "files": [

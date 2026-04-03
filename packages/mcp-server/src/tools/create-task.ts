@@ -10,6 +10,11 @@ import { HumanCheckApiClient } from "../api-client.js";
 
 export const createTaskInputSchema = {
   projectId: z.string().min(1).describe("Project ID to create a task for"),
+  title: z
+    .string()
+    .max(200)
+    .optional()
+    .describe("Test topic name, e.g. 'Contact form test' or 'Login flow test'. Each task should represent one focused test topic."),
   testerCount: z
     .number()
     .int()
@@ -54,10 +59,15 @@ export const createTaskInputSchema = {
     .url()
     .optional()
     .describe("Optional URL to receive a POST request when the task completes."),
+  autoAcceptTesters: z
+    .boolean()
+    .optional()
+    .describe("Override project-level auto-accept setting for this task. If omitted, inherits from project."),
 } as const;
 
 export type CreateTaskInput = {
   projectId: string;
+  title?: string;
   testerCount?: number;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
   deadline?: string;
@@ -68,6 +78,7 @@ export type CreateTaskInput = {
     screenshotUrl?: string;
   }>;
   webhookUrl?: string;
+  autoAcceptTesters?: boolean;
 };
 
 export async function handleCreateTask(
@@ -77,10 +88,12 @@ export async function handleCreateTask(
   try {
     const task = await client.createTask({
       projectId: args.projectId,
+      title: args.title,
       testerCount: args.testerCount ?? 3,
       difficulty: args.difficulty ?? "MEDIUM",
       deadline: args.deadline,
       webhookUrl: args.webhookUrl,
+      autoAcceptTesters: args.autoAcceptTesters,
       scenarioIds: args.scenarioIds,
       ...(args.scenarios
         ? {
@@ -100,8 +113,9 @@ export async function handleCreateTask(
 
     const result = {
       taskId: task.id,
+      title: task.title ?? undefined,
       status: task.status,
-      message: `Task created. ${task.testerCount} tester(s) will be matched.`,
+      message: `Task${task.title ? ` "${task.title}"` : ""} created. ${task.testerCount} tester(s) will be matched.`,
     };
 
     return {

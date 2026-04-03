@@ -1,6 +1,6 @@
 {
   "name": "@humancheck/shared",
-  "version": "0.7.0",
+  "version": "0.9.0",
   "description": "Shared types, interfaces, and constants for HumanCheck platform",
   "license": "MIT",
   "author": "HumanCheck <hello@humancheckme.com>",
@@ -25,6 +25,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js"
+    },
     "./tailwind-preset.js": "./tailwind-preset.js",
     "./styles/shared.css": "./styles/shared.css"
   },
@@ -40,7 +44,20 @@
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-router-dom": "^7.1.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-router-dom": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@types/react": "^19.0.0",
     "typescript": "^5.7.0"
   }
 }
